@@ -25,6 +25,16 @@ Human-facing output belongs in `outputs/<slug>/public/`. Internal pipeline artif
 
 See `docs/file-contract.md` for the full folder contract, image marker format, image notes format, and slug rules. Use `inputs/draft.md` as the starting template for a new draft.
 
+## LLM Dry-Run
+
+Prompt packages can be generated without calling a model provider.
+
+```bash
+node ./bin/blog-writer.js dry-run profile
+```
+
+See `docs/reference/llm-boundary.md` for task names, prompt package contents, and the future provider boundary.
+
 ## Development
 
 ```bash
