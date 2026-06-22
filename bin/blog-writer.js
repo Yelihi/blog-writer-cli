@@ -2,6 +2,7 @@
 
 import { writeDryRunPromptPackage } from '../src/llm/prompt-package.js';
 import { providerMissingMessage, resolveProvider } from '../src/llm/provider.js';
+import { runProfileCommand } from '../src/profile/profile.js';
 
 const helpText = `Usage: blog-writer <command> [options]
 
@@ -32,6 +33,10 @@ async function main(argv) {
     return 0;
   }
 
+  if (command === 'profile') {
+    return handleProfile(args);
+  }
+
   if (command === 'dry-run') {
     return handleDryRun(args);
   }
@@ -42,6 +47,25 @@ async function main(argv) {
 
   process.stderr.write(`Unknown command: ${command}\n\n${helpText}`);
   return 1;
+}
+
+async function handleProfile(args) {
+  if (args[0] === '--help' || args[0] === '-h') {
+    process.stdout.write(`Usage: blog-writer profile
+
+Reads Markdown files from samples/ and prepares writer style outputs.
+`);
+    return 0;
+  }
+
+  const result = await runProfileCommand();
+  process.stdout.write(`Writer style files written from ${result.sampleCount} sample(s).
+- ${result.writerProfilePath}
+- ${result.styleRulesPath}
+Prompt package:
+- ${result.packageDir}
+`);
+  return 0;
 }
 
 async function handleDryRun(args) {

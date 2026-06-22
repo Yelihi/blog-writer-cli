@@ -5,26 +5,33 @@ import { getTask } from './tasks.js';
 export async function writeDryRunPromptPackage(taskName, options = {}) {
   const task = getTask(taskName);
   const outputRoot = options.outputRoot ?? '.blog-writer/dry-run';
+  const contextSections = options.contextSections ?? [];
   const packageDir = join(outputRoot, task.name);
-  const promptTemplate = await readFile(task.templatePath, 'utf8');
+  const templateUrl = new URL(`../../${task.templatePath}`, import.meta.url);
+  const promptTemplate = await readFile(templateUrl, 'utf8');
   const metadata = {
     task: task.name,
     description: task.description,
     templatePath: task.templatePath,
     outputFiles: task.outputFiles,
     providerRequired: false,
+    contextSections: contextSections.map((section) => section.title),
     generatedAt: new Date().toISOString(),
   };
 
   await mkdir(packageDir, { recursive: true });
-  await writeFile(join(packageDir, 'prompt.md'), renderPrompt(task, promptTemplate), 'utf8');
+  await writeFile(join(packageDir, 'prompt.md'), renderPrompt(task, promptTemplate, contextSections), 'utf8');
   await writeFile(join(packageDir, 'metadata.json'), `${JSON.stringify(metadata, null, 2)}\n`, 'utf8');
   await writeFile(join(packageDir, 'README.md'), renderReadme(task), 'utf8');
 
   return { packageDir, task };
 }
 
-function renderPrompt(task, template) {
+function renderPrompt(task, template, contextSections) {
+  const context = contextSections.length === 0
+    ? ''
+    : `\n\n# Context\n\n${contextSections.map((section) => `## ${section.title}\n\n${section.body}`).join('\n\n')}`;
+
   return `# Blog Writer Prompt Package
 
 Task: ${task.name}
@@ -34,7 +41,7 @@ ${task.outputFiles.map((file) => `- ${file}`).join('\n')}
 
 ---
 
-${template}`;
+${template}${context}`;
 }
 
 function renderReadme(task) {
