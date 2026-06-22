@@ -1,0 +1,17 @@
+{
+  "name": "blog-writer",
+  "version": "0.1.0",
+  "description": "File-based CLI pipeline for turning drafts into blog writing packages.",
+  "type": "module",
+  "bin": {
+    "blog-writer": "./bin/blog-writer.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node ./bin/blog-writer.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
