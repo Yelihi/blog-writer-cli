@@ -23,6 +23,8 @@ outputs/       Generated blog writing packages
 
 Human-facing output belongs in `outputs/<slug>/public/`. Internal pipeline artifacts belong in `outputs/<slug>/work/`.
 
+See `docs/file-contract.md` for the full folder contract, image marker format, image notes format, and slug rules. Use `inputs/draft.md` as the starting template for a new draft.
+
 ## Development
 
 ```bash
