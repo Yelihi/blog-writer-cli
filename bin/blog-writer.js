@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { runDraftCommand } from '../src/draft/draft.js';
 import { writeDryRunPromptPackage } from '../src/llm/prompt-package.js';
 import { providerMissingMessage, resolveProvider } from '../src/llm/provider.js';
 import { runProfileCommand } from '../src/profile/profile.js';
@@ -37,6 +38,10 @@ async function main(argv) {
     return handleProfile(args);
   }
 
+  if (command === 'draft') {
+    return handleDraft(args);
+  }
+
   if (command === 'dry-run') {
     return handleDryRun(args);
   }
@@ -62,6 +67,29 @@ Reads Markdown files from samples/ and prepares writer style outputs.
   process.stdout.write(`Writer style files written from ${result.sampleCount} sample(s).
 - ${result.writerProfilePath}
 - ${result.styleRulesPath}
+Prompt package:
+- ${result.packageDir}
+`);
+  return 0;
+}
+
+async function handleDraft(args) {
+  const inputPath = args[0];
+  if (!inputPath || inputPath === '--help' || inputPath === '-h') {
+    process.stdout.write(`Usage: blog-writer draft <input.md> [--slug <slug>]
+
+Creates draft work files under outputs/<slug>/work.
+`);
+    return inputPath ? 0 : 1;
+  }
+
+  const result = await runDraftCommand(inputPath, {
+    slug: readOption(args.slice(1), '--slug') ?? undefined,
+  });
+
+  process.stdout.write(`Draft work files written for slug: ${result.slug}
+- ${result.briefPath}
+- ${result.outlinePath}
 Prompt package:
 - ${result.packageDir}
 `);
