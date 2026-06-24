@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { runCoverPromptCommand } from '../src/cover/cover-prompt.js';
 import { runDraftCommand } from '../src/draft/draft.js';
 import { writeDryRunPromptPackage } from '../src/llm/prompt-package.js';
 import { providerMissingMessage, resolveProvider } from '../src/llm/provider.js';
@@ -40,6 +41,10 @@ async function main(argv) {
 
   if (command === 'draft') {
     return handleDraft(args);
+  }
+
+  if (command === 'cover-prompt') {
+    return handleCoverPrompt(args);
   }
 
   if (command === 'dry-run') {
@@ -90,11 +95,29 @@ Creates draft work files under outputs/<slug>/work.
   process.stdout.write(`Draft work files written for slug: ${result.slug}
 - ${result.postPath}
 - ${result.imagePlanPath}
+- ${result.coverPromptPath}
 - ${result.briefPath}
 - ${result.outlinePath}
 - ${result.editNotesPath}
 Prompt package:
 - ${result.packageDir}
+`);
+  return 0;
+}
+
+async function handleCoverPrompt(args) {
+  const outputPackagePath = args[0];
+  if (!outputPackagePath || outputPackagePath === '--help' || outputPackagePath === '-h') {
+    process.stdout.write(`Usage: blog-writer cover-prompt outputs/<slug>
+
+Regenerates outputs/<slug>/public/cover-prompt.md from post.md and brief.md.
+`);
+    return outputPackagePath ? 0 : 1;
+  }
+
+  const result = await runCoverPromptCommand(outputPackagePath);
+  process.stdout.write(`Cover prompt written:
+- ${result.coverPromptPath}
 `);
   return 0;
 }

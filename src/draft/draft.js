@@ -1,5 +1,6 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
+import { writeCoverPromptForPackage } from '../cover/cover-prompt.js';
 import { writeDryRunPromptPackage } from '../llm/prompt-package.js';
 
 export async function runDraftCommand(inputPath, options = {}) {
@@ -42,6 +43,7 @@ export async function runDraftCommand(inputPath, options = {}) {
   await writeFile(join(publicDir, 'post.md'), renderPost({ draft, title, slug, styleRules }), 'utf8');
   await writeFile(join(publicDir, 'image-plan.md'), renderImagePlan(imagePlan), 'utf8');
   await writeFile(join(workDir, 'edit-notes.md'), renderEditNotes({ inputPath, slug, styleRules, packageDir }), 'utf8');
+  const { coverPromptPath } = await writeCoverPromptForPackage({ packageRoot: outputRoot });
 
   return {
     slug,
@@ -50,6 +52,7 @@ export async function runDraftCommand(inputPath, options = {}) {
     outlinePath: join(workDir, 'outline.md'),
     postPath: join(publicDir, 'post.md'),
     imagePlanPath: join(publicDir, 'image-plan.md'),
+    coverPromptPath,
     editNotesPath: join(workDir, 'edit-notes.md'),
     packageDir,
   };
