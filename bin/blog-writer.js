@@ -89,6 +89,7 @@ Creates draft work files under outputs/<slug>/work.
 
   process.stdout.write(`Draft work files written for slug: ${result.slug}
 - ${result.postPath}
+- ${result.imagePlanPath}
 - ${result.briefPath}
 - ${result.outlinePath}
 - ${result.editNotesPath}

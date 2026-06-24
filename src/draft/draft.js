@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { writeDryRunPromptPackage } from '../llm/prompt-package.js';
 
@@ -35,9 +35,12 @@ export async function runDraftCommand(inputPath, options = {}) {
     ],
   });
 
+  const imagePlan = await buildImagePlan({ cwd, draft });
+
   await writeFile(join(workDir, 'brief.md'), renderBrief({ inputPath, title, slug, styleRules, packageDir }), 'utf8');
   await writeFile(join(workDir, 'outline.md'), renderOutline({ title, slug, packageDir }), 'utf8');
   await writeFile(join(publicDir, 'post.md'), renderPost({ draft, title, slug, styleRules }), 'utf8');
+  await writeFile(join(publicDir, 'image-plan.md'), renderImagePlan(imagePlan), 'utf8');
   await writeFile(join(workDir, 'edit-notes.md'), renderEditNotes({ inputPath, slug, styleRules, packageDir }), 'utf8');
 
   return {
@@ -46,6 +49,7 @@ export async function runDraftCommand(inputPath, options = {}) {
     briefPath: join(workDir, 'brief.md'),
     outlinePath: join(workDir, 'outline.md'),
     postPath: join(publicDir, 'post.md'),
+    imagePlanPath: join(publicDir, 'image-plan.md'),
     editNotesPath: join(workDir, 'edit-notes.md'),
     packageDir,
   };
@@ -68,6 +72,18 @@ async function readOptionalFile(path) {
   } catch (error) {
     if (error.code === 'ENOENT') {
       return '';
+    }
+    throw error;
+  }
+}
+
+async function readAssetNames(cwd) {
+  try {
+    const entries = await readdir(join(cwd, 'inputs', 'assets'), { withFileTypes: true });
+    return entries.filter((entry) => entry.isFile()).map((entry) => entry.name).sort();
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return [];
     }
     throw error;
   }
@@ -166,7 +182,87 @@ function renderEditNotes({ inputPath, slug, styleRules, packageDir }) {
 - Prompt package: ${packageDir}
 - Framework-specific frontmatter was not added.
 - MDX-only syntax was not added.
-- Body image planning and cover image generation remain out of scope for this step.
+- Body image planning was generated from user-provided markers and notes only.
+- Cover image generation remains out of scope for this step.
+`;
+}
+
+async function buildImagePlan({ cwd, draft }) {
+  const assetNames = await readAssetNames(cwd);
+  const knownAssets = new Set(assetNames);
+  const inlineMarkers = parseInlineImageMarkers(draft);
+  const imageNotes = parseImageNotes(draft);
+  const referencedFiles = new Set([
+    ...inlineMarkers.map((marker) => marker.fileName),
+    ...imageNotes.map((note) => note.fileName),
+  ]);
+  const missingAssets = [...referencedFiles].filter((fileName) => !knownAssets.has(fileName)).sort();
+
+  return {
+    assetNames,
+    inlineMarkers,
+    imageNotes,
+    missingAssets,
+  };
+}
+
+function parseInlineImageMarkers(markdown) {
+  return [...markdown.matchAll(/<!--\s*image:\s*([^|]+?)\s*\|\s*alt:\s*([^|]+?)\s*\|\s*caption:\s*([^]+?)\s*-->/g)]
+    .map((match) => ({
+      fileName: match[1].trim(),
+      alt: match[2].trim(),
+      caption: match[3].trim(),
+    }));
+}
+
+function parseImageNotes(markdown) {
+  const lines = markdown.split('\n');
+  const headingIndex = lines.findIndex((line) => /^##\s+이미지 메모\s*$/.test(line));
+  if (headingIndex === -1) {
+    return [];
+  }
+
+  const sectionLines = [];
+  for (const line of lines.slice(headingIndex + 1)) {
+    if (/^##\s+/.test(line)) {
+      break;
+    }
+    sectionLines.push(line);
+  }
+
+  return sectionLines
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('- '))
+    .map((line) => line.slice(2).split(/:\s*(.+)/))
+    .filter(([fileName, note]) => fileName && note)
+    .map(([fileName, note]) => ({
+      fileName: fileName.trim(),
+      note: note.trim(),
+    }));
+}
+
+function renderImagePlan({ assetNames, inlineMarkers, imageNotes, missingAssets }) {
+  return `# Image Plan
+
+Automatic image placement is disabled in the MVP. This plan only reflects user-provided inline markers and image notes.
+
+## Available Assets
+
+${assetNames.length ? assetNames.map((asset) => `- ${asset}`).join('\n') : '- No files found in inputs/assets/.'}
+
+## Inline Markers
+
+${inlineMarkers.length ? inlineMarkers.map((marker) => `- ${marker.fileName}
+  - alt: ${marker.alt}
+  - caption: ${marker.caption}`).join('\n') : '- No inline image markers found.'}
+
+## Image Notes
+
+${imageNotes.length ? imageNotes.map((note) => `- ${note.fileName}: ${note.note}`).join('\n') : '- No image notes found.'}
+
+## Missing assets
+
+${missingAssets.length ? missingAssets.map((asset) => `- ${asset}`).join('\n') : '- None.'}
 `;
 }
 
