@@ -5,7 +5,8 @@ description: Use when turning a user's draft, sample posts, and image notes into
 
 # Codex Blog Writer
 
-Use this skill as a thin wrapper around the Blog Writer CLI. Do not reimplement blog planning, rewriting, image planning, or cover prompt logic inside the skill. The CLI is the source of truth.
+Use this skill to turn `inputs/draft.md` into the final files under `outputs/<slug>/`.
+The CLI prepares the package and mechanical files. Codex must do the writing pass.
 
 ## Before Running
 
@@ -48,13 +49,41 @@ node ./bin/blog-writer.js cover-prompt outputs/<slug>
 
 Skip `node ./bin/blog-writer.js profile` only when `writer-style/writer-profile.md` and `writer-style/style-rules.md` are already current. Use `blog-writer ...` only after `npm link` or another install step has put the package bin on PATH.
 
+## Codex Writing Pass
+
+After `draft` runs, read these files before editing `outputs/<slug>/public/post.md`:
+
+- `inputs/draft.md`
+- `writer-style/writer-profile.md`
+- `writer-style/style-rules.md`
+- every Markdown file in `samples/`
+- `outputs/<slug>/work/brief.md`
+- `outputs/<slug>/work/outline.md`
+
+Then overwrite:
+
+- `outputs/<slug>/public/post.md` with the final blog post.
+- `outputs/<slug>/work/brief.md` with the real source brief.
+- `outputs/<slug>/work/outline.md` with the real structure used.
+- `outputs/<slug>/work/edit-notes.md` with concise editing notes.
+
+Rules for the final post:
+
+- Follow the sample essays' structure and rhythm. Do not force `머리말`, `본문`, `마무리`, or a table of contents unless the samples actually use that pattern.
+- Preserve the user's concrete claims and examples from `inputs/draft.md`; do not invent unsupported facts.
+- Use `writer-style/style-rules.md` as the binding style rule set.
+- Actively use Markdown-native visual aids when they improve understanding: tables for comparisons, Mermaid diagrams for flows or state changes, blockquotes for key claims, and code blocks for concrete examples.
+- Actively use Markdown emphasis where it helps scanning: bold for core claims, inline code for API names and exact tokens, and concise callouts/quotes for caveats. Do not decorate every paragraph.
+- Keep Markdown framework-agnostic: no frontmatter, MDX components, or Astro-only syntax.
+- Keep image markers or clearly account for them in `image-plan.md`.
+
 ## Review
 
 Open `docs/checklists/blog-writer-review.md` and verify the generated package before reporting completion. Human-facing files are in `outputs/<slug>/public/`; internal work files are in `outputs/<slug>/work/`.
 
 ## Boundaries
 
-- Do not reimplement or duplicate CLI behavior in this skill.
+- Do not duplicate mechanical CLI behavior in this skill.
 - Do not generate the actual cover image.
 - Do not add Astro, MDX, or blog-specific frontmatter unless a separate downstream project asks for it.
 - Preserve the default author's style by using `writer-style/style-rules.md`.

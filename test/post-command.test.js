@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 const execFileAsync = promisify(execFile);
 const cliPath = resolve('./bin/blog-writer.js');
 
-test('draft writes framework-agnostic post.md and edit notes', async () => {
+test('draft preserves the source post without forcing a generic structure', async () => {
   const cwd = await mkdtemp(join(tmpdir(), 'blog-writer-post-'));
   await mkdir(join(cwd, 'inputs'), { recursive: true });
   await mkdir(join(cwd, 'writer-style'), { recursive: true });
@@ -31,10 +31,10 @@ test('draft writes framework-agnostic post.md and edit notes', async () => {
   const prompt = await readFile(join(cwd, '.blog-writer', 'dry-run', 'draft-brief', 'prompt.md'), 'utf8');
 
   assert.match(post, /^# 글쓰기 파이프라인 만들기/m);
-  assert.match(post, /## 머리말/);
-  assert.match(post, /## 목차/);
   assert.match(post, /## 배경/);
-  assert.match(post, /## 마무리/);
+  assert.doesNotMatch(post, /## 머리말/);
+  assert.doesNotMatch(post, /## 목차/);
+  assert.doesNotMatch(post, /## 마무리/);
   assert.doesNotMatch(post, /^---$/m);
   assert.doesNotMatch(post, /<[^>]+>/);
   assert.match(notes, /# Edit Notes/);

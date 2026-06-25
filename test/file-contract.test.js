@@ -16,7 +16,7 @@ test('file contract documentation defines source, input, output, and image marke
 });
 
 test('sample draft template shows image markers and image notes', async () => {
-  const draft = await readFile('inputs/draft.md', 'utf8');
+  const draft = await readFile('inputs/template.md', 'utf8');
 
   assert.match(draft, /<!-- image: photo-01\.jpg \| alt: .* \| caption: .* -->/);
   assert.match(draft, /## 이미지 메모/);

@@ -26,7 +26,8 @@ Run `node ./bin/blog-writer.js profile` again when samples change. Otherwise con
 Review these files first:
 
 - `outputs/<slug>/public/post.md`
-  - Has a clear title, introduction, table of contents, body sections, and closing.
+  - Has a clear title and coherent sections that follow the sample essays' structure.
+  - Does not force `머리말`, `본문`, `마무리`, or a table of contents unless the samples use that pattern.
   - Preserves the author's style without adding unsupported claims.
   - Uses general Markdown only, not MDX-specific syntax.
 - `outputs/<slug>/public/image-plan.md`

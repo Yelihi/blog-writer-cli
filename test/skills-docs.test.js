@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-test('Codex skill document delegates blog writing work to the CLI', async () => {
+test('Codex skill document runs the CLI and then performs the writing pass', async () => {
   const skill = await readFile('skills/codex-blog-writer/SKILL.md', 'utf8');
 
   assert.match(skill, /name: codex-blog-writer/);
@@ -11,7 +11,11 @@ test('Codex skill document delegates blog writing work to the CLI', async () => 
   assert.match(skill, /node \.\/bin\/blog-writer\.js cover-prompt outputs\/<slug>/);
   assert.match(skill, /npm link/);
   assert.match(skill, /writer-style\/style-rules\.md/);
-  assert.match(skill, /Do not reimplement/);
+  assert.match(skill, /Codex Writing Pass/);
+  assert.match(skill, /every Markdown file in `samples\/`/);
+  assert.match(skill, /Do not force `머리말`, `본문`, `마무리`/);
+  assert.match(skill, /tables for comparisons, Mermaid diagrams for flows/);
+  assert.match(skill, /bold for core claims/);
   assert.match(skill, /docs\/checklists\/blog-writer-review\.md/);
 });
 

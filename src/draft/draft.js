@@ -138,41 +138,20 @@ function renderOutline({ title, slug, packageDir }) {
 
 Working title: ${title || slug}
 
-## Sections
-
-1. Introduction
-2. Main body
-3. Closing
-
 Prompt package:
 - ${packageDir}
 
-Replace this placeholder with the model-generated outline after reviewing the dry-run prompt package.
+Replace this placeholder with a Codex-generated outline after reviewing the dry-run prompt package.
 `;
 }
 
 function renderPost({ draft, title, slug }) {
   const postTitle = title || slug;
   const body = removeFirstTitle(draft).trim();
-  const intro = firstParagraph(body);
-  const mainBody = removeFirstParagraph(body, intro);
-  const sections = extractSectionTitles(body);
 
   return `# ${postTitle}
 
-## 머리말
-
-${intro || '이 글은 입력 원고를 바탕으로 정리한 범용 Markdown 초안입니다.'}
-
-## 목차
-
-${renderTableOfContents(sections)}
-
-${mainBody}
-
-## 마무리
-
-핵심 내용을 다시 정리하고, 다음 글에서 다룰 수 있는 후속 주제를 남깁니다.
+${body}
 `;
 }
 
@@ -271,27 +250,4 @@ ${missingAssets.length ? missingAssets.map((asset) => `- ${asset}`).join('\n') :
 
 function removeFirstTitle(markdown) {
   return markdown.replace(/^#\s+.+\n?/, '');
-}
-
-function extractSectionTitles(markdown) {
-  return [...markdown.matchAll(/^##\s+(.+)$/gm)].map((match) => match[1].trim());
-}
-
-function renderTableOfContents(sections) {
-  const base = ['머리말', ...sections, '마무리'];
-  return base.map((section) => `- ${section}`).join('\n');
-}
-
-function firstParagraph(markdown) {
-  return markdown
-    .split(/\n{2,}/)
-    .map((part) => part.trim())
-    .find((part) => part && !part.startsWith('##') && !part.startsWith('<!--')) ?? '';
-}
-
-function removeFirstParagraph(markdown, paragraph) {
-  if (!paragraph) {
-    return markdown;
-  }
-  return markdown.replace(paragraph, '').trim();
 }
