@@ -1,0 +1,4 @@
+interface:
+  display_name: "Blog Writer Draft"
+  short_description: "Complete Blog Writer draft packages"
+  default_prompt: "Use $blog-writer-draft to turn inputs/draft.md into a complete Blog Writer output package."

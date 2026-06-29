@@ -10,6 +10,6 @@ Sample files:
 - sample-essay-05.md
 
 Prompt package:
-- /Users/yelihi/Desktop/github/1.personal-project/6.blog-writer/.blog-writer/dry-run/profile
+- /Users/yelihe/Desktop/thinking/blog-writer/blog-writer-cli/.blog-writer/dry-run/profile
 
 Replace this placeholder with the model-generated writer profile after reviewing the dry-run prompt package.
