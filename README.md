@@ -16,6 +16,14 @@ node ./bin/blog-writer.js draft inputs/draft.md
 node ./bin/blog-writer.js cover-prompt outputs/<slug>
 ```
 
+Codex에서 최종 글까지 완성하려면 repo skill을 사용합니다.
+
+```text
+$blog-writer-draft inputs/draft.md로 최종 블로그 글 작성해줘
+```
+
+CLI의 `draft` 명령은 출력 패키지와 기본 파일을 만들고, Codex skill이 이후 `post.md`, `brief.md`, `outline.md`, `edit-notes.md`를 실제 글쓰기 결과로 덮어씁니다.
+
 `blog-writer profile`처럼 짧게 실행하려면 한 번만 `npm link`로 로컬 패키지를 PATH에 연결하세요. 설치하지 않은 상태에서는 `blog-writer` 명령이 없습니다.
 
 생성 결과는 사람이 사용할 파일과 내부 작업 파일로 나뉩니다.
@@ -111,6 +119,8 @@ node ./bin/blog-writer.js cover-prompt outputs/<slug>
 
 이 명령은 실제 커버 이미지는 생성하지 않습니다. `outputs/<slug>/public/cover-prompt.md`에 외부 이미지 생성 도구로 가져갈 프롬프트만 작성합니다.
 
+커버 프롬프트는 가로형 블로그 커버 이미지만 생성하도록 안내하며, 이미지 안에는 제목이나 문구를 넣지 않습니다.
+
 ### 5. 결과물 확인
 
 먼저 사람이 사용할 public 파일을 확인합니다.
@@ -156,6 +166,7 @@ samples/       기본 작성자의 기존 글 샘플
 writer-style/  profile 명령으로 생성되는 작성자 스타일 파일
 inputs/        새 원고와 사용자 제공 이미지
 outputs/       생성된 블로그 작성 패키지
+.agents/       Codex가 자동 발견하는 repo skill
 skills/        Codex와 Claude Code용 얇은 CLI 사용 가이드
 docs/          파일 계약, 체크리스트, LLM 경계 문서
 ```

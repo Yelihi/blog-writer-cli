@@ -118,7 +118,6 @@ Visual direction: ${visualDirection}
 
 - Use a horizontal blog cover composition with a strong focal point and generous negative space for layout cropping.
 - Make the main subject instantly readable at thumbnail size.
-- Follow a clean thumbnail-like layout inspired by the reference: spacious background, centered or lower-third title placement, and restrained supporting visual elements.
 - Avoid placing important details near the edges.
 
 ## Color and mood
@@ -129,10 +128,7 @@ Visual direction: ${visualDirection}
 
 ## Text in image
 
-- Include the article title as clean Korean title text, placed around the center or lower third.
-- Keep the Korean font modern, neat, and not too large; avoid oversized title treatment unless using a YouTube thumbnail-style cover.
-- A YouTube thumbnail-style cover is acceptable when it remains clean, balanced, and suitable for a technical blog.
-- Do not include extra readable text, logos, UI labels, watermarks, or fake typography beyond the title.
+Do not include readable text, logos, UI labels, watermarks, or fake typography in the generated image. Add any title text later in the blog layout if needed.
 
 ## Avoid
 

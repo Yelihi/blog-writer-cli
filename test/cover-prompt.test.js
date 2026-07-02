@@ -27,9 +27,9 @@ test('draft writes cover-prompt.md without generating an image', async () => {
   assert.match(prompt, /Composition/);
   assert.match(prompt, /Color and mood/);
   assert.match(prompt, /Text in image/);
-  assert.match(prompt, /Korean title text/);
-  assert.match(prompt, /YouTube thumbnail-style cover/);
-  assert.doesNotMatch(prompt, /Do not include readable text/);
+  assert.match(prompt, /Do not include readable text/);
+  assert.doesNotMatch(prompt, /Korean title text/);
+  assert.doesNotMatch(prompt, /YouTube thumbnail-style cover/);
   assert.match(prompt, /Avoid/);
   assert.match(prompt, /This file does not generate an image/);
 });
